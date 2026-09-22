@@ -53,7 +53,7 @@
   - 完了条件: R-1.1〜R-1.3を満たす
   - _R-1.1, R-1.2, R-1.3_
 
-- [ ] 2.4 (P) blog: 一覧・個別ページ実装
+- [x] 2.4 (P) blog: 一覧・個別ページ実装
   - 成果物: src/pages/blog/index.astro, src/pages/blog/[slug].astro
   - 完了条件: R-1.1〜R-1.3を満たす
   - _R-1.1, R-1.2, R-1.3_
