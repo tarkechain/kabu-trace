@@ -1,0 +1,135 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+
+const base = import.meta.env.BASE_URL;
+
+const pillars = [
+  {
+    key: "disclosures",
+    label: "適時開示まとめ",
+    description: "適時開示から抽出した情報のまとめ",
+    href: `${base}disclosures/`,
+  },
+  {
+    key: "stocks",
+    label: "銘柄分析",
+    description: "気になる銘柄の分析",
+    href: `${base}stocks/`,
+  },
+  {
+    key: "blog",
+    label: "blog",
+    description: "投資に関するblog記事",
+    href: `${base}blog/`,
+  },
+] as const;
+
+const previews = await Promise.all(
+  pillars.map(async (pillar) => {
+    const entries = (await getCollection(pillar.key))
+      .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+      .slice(0, 3);
+    return { ...pillar, entries };
+  })
+);
+---
+
+<Layout
+  title="KabuTrace"
+  description="適時開示から抽出した情報のまとめ、気になる銘柄の分析、投資ブログをまとめた個人サイト。"
+>
+  <section class="pillars">
+    {pillars.map((pillar) => (
+      <a class="pillar-card" href={pillar.href}>
+        <h2>{pillar.label}</h2>
+        <p>{pillar.description}</p>
+      </a>
+    ))}
+  </section>
+
+  {previews.map((pillar) => (
+    <section class="preview">
+      <h2>{pillar.label}の最新記事</h2>
+      {pillar.entries.length === 0 ? (
+        <p>現在、記事はありません。</p>
+      ) : (
+        <ul class="preview-list">
+          {pillar.entries.map((entry) => (
+            <li>
+              <span class="meta">{entry.data.date.toISOString().slice(0, 10)}</span>
+              <a href={`${pillar.href}${entry.id}/`}>{entry.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <a class="more-link" href={pillar.href}>{pillar.label}の一覧を見る</a>
+    </section>
+  ))}
+</Layout>
+
+<style>
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .pillar-card {
+    display: block;
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .pillar-card h2 {
+    margin: 0 0 var(--space-xs) 0;
+    color: var(--color-accent);
+  }
+
+  .pillar-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .preview {
+    margin-bottom: var(--space-xl);
+  }
+
+  .preview-list {
+    list-style: none;
+    margin: 0 0 var(--space-sm) 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .preview-list .meta {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+    margin-right: var(--space-sm);
+  }
+
+  .preview-list a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .preview-list a:hover,
+  .preview-list a:focus-visible,
+  .more-link:hover,
+  .more-link:focus-visible {
+    text-decoration: underline;
+  }
+
+  .more-link {
+    color: var(--color-accent);
+    font-size: var(--font-size-note);
+  }
+</style>

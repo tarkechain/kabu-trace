@@ -1,0 +1,27 @@
+---
+const base = import.meta.env.BASE_URL;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <p>&copy; {year} KabuTrace</p>
+  <a href={`${base}disclaimer/`}>免責事項</a>
+</footer>
+
+<style>
+  .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--content-padding-mobile);
+    border-top: var(--border-width) solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .site-footer a {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+  }
+</style>

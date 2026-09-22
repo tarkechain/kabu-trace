@@ -1,0 +1,91 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("stocks");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const yahooFinanceUrl = `https://finance.yahoo.co.jp/quote/${entry.data.stockCode}.T`;
+
+const dataSheet = [
+  { label: "株価", value: entry.data.stockPrice },
+  { label: "時価総額", value: entry.data.marketCap },
+  { label: "PER", value: entry.data.per },
+  { label: "自己資本比率", value: entry.data.equityRatio },
+];
+---
+
+<Layout
+  title={`${entry.data.title} | KabuTrace`}
+  description={entry.data.summary ?? entry.data.title}
+>
+  <p class="meta">
+    {entry.data.date.toISOString().slice(0, 10)} ・ {entry.data.stockName}（{entry.data.stockCode}）
+  </p>
+  <h1>{entry.data.title}</h1>
+
+  <table class="data-sheet">
+    <tbody>
+      {dataSheet.map((row) => (
+        <tr>
+          <th>{row.label}</th>
+          <td>{row.value ?? "-"}</td>
+        </tr>
+      ))}
+      <tr>
+        <th>Yahoo!ファイナンス</th>
+        <td><a href={yahooFinanceUrl} target="_blank" rel="noopener noreferrer">{yahooFinanceUrl}</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <Content />
+</Layout>
+
+<style>
+  .meta {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .data-sheet {
+    width: 100%;
+    margin: var(--space-md) 0 var(--space-lg) 0;
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    border-collapse: collapse;
+    font-size: var(--font-size-note);
+  }
+
+  .data-sheet th,
+  .data-sheet td {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: var(--border-width) solid var(--color-border);
+    text-align: left;
+  }
+
+  .data-sheet tr:last-child th,
+  .data-sheet tr:last-child td {
+    border-bottom: none;
+  }
+
+  .data-sheet th {
+    width: 40%;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-body);
+  }
+
+  .data-sheet a {
+    color: var(--color-accent);
+    word-break: break-all;
+  }
+</style>
