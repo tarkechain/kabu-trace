@@ -16,7 +16,7 @@
 
 ## フェーズ1: 基盤
 
-- [ ] 1.1 Astroプロジェクト初期化とディレクトリ構成
+- [x] 1.1 Astroプロジェクト初期化とディレクトリ構成
   - 成果物: astro.config.mjs, package.json, src/pages/index.astro（空スケルトン）
   - 完了条件: `npm run dev` が起動し、CLAUDE.md記載のディレクトリ構成（src/pages, src/content, src/components, src/layouts）が存在する。astro.config.mjsのbaseが `/kabu-trace/` に設定されている
   - _第8章（デプロイ先の制約）_
