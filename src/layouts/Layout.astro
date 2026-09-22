@@ -1,0 +1,74 @@
+---
+import "../styles/tokens.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+}
+
+const base = import.meta.env.BASE_URL;
+const { title, description, ogImage = `${base}og-default.png` } = Astro.props;
+const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url);
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+  </head>
+  <body>
+    <Header />
+    <main class="content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+  }
+
+  :global(h1, h2, h3) {
+    line-height: var(--line-height-heading);
+  }
+
+  :global(h1) {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+  }
+
+  :global(h2) {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
+  }
+
+  :global(h3) {
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
+  }
+
+  .content {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--content-padding-mobile);
+  }
+</style>

@@ -26,7 +26,7 @@
   - 完了条件: design-tokens.md記載の配色・タイポグラフィ・余白・ブレークポイントの全変数がCSSカスタムプロパティとして定義されている
   - _N-7.1, N-4.2_
 
-- [ ] 1.3 共通レイアウトとHeader/Footer
+- [x] 1.3 共通レイアウトとHeader/Footer
   - 成果物: src/layouts/Layout.astro, src/components/Header.astro, src/components/Footer.astro
   - 完了条件: 全ページ共通でグローバルメニュー（開示まとめ・銘柄分析・blogの3リンク）とフッター（コピーライト+免責事項リンク）が表示され、title/description/OGP画像を差し込める構造になっている
   - _第4.3章, N-5.1, N-5.2_

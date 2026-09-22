@@ -1,0 +1,52 @@
+---
+const base = import.meta.env.BASE_URL;
+
+const links = [
+  { href: `${base}disclosures/`, label: "開示まとめ" },
+  { href: `${base}stocks/`, label: "銘柄分析" },
+  { href: `${base}blog/`, label: "blog" },
+];
+---
+
+<header class="site-header">
+  <a class="logo" href={base}>KabuTrace</a>
+  <nav class="nav">
+    {links.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--content-padding-mobile);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .logo {
+    font-weight: var(--font-weight-h3);
+    font-size: var(--font-size-h3);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .nav {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .nav a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--font-size-body);
+  }
+
+  .nav a:hover,
+  .nav a:focus-visible {
+    text-decoration: underline;
+  }
+</style>
