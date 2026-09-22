@@ -1,0 +1,67 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+const base = import.meta.env.BASE_URL;
+const entries = (await getCollection("disclosures")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout
+  title="適時開示まとめ | KabuTrace"
+  description="適時開示から抽出した情報のまとめ一覧です。"
+>
+  <h1>適時開示まとめ</h1>
+
+  {entries.length === 0 ? (
+    <p>現在、開示情報はありません。</p>
+  ) : (
+    <ul class="card-list">
+      {entries.map((entry) => (
+        <li class="card">
+          <p class="meta">
+            {entry.data.date.toISOString().slice(0, 10)} ・ {entry.data.stockName}
+          </p>
+          <a href={`${base}disclosures/${entry.id}/`}>{entry.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Layout>
+
+<style>
+  .card-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .card {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .meta {
+    margin: 0 0 var(--space-xs) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .card a {
+    color: var(--color-accent);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
+    text-decoration: none;
+  }
+
+  .card a:hover,
+  .card a:focus-visible {
+    text-decoration: underline;
+  }
+</style>

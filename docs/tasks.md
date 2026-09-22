@@ -43,7 +43,7 @@
   - 完了条件: disclosures / stocks / blog の3コレクションのスキーマが定義され、`npm run dev` でエラーなく認識される
   - _第6章R-1, 第5章, N-7.2_
 
-- [ ] 2.2 適時開示まとめ: 一覧・個別ページ実装
+- [x] 2.2 適時開示まとめ: 一覧・個別ページ実装
   - 成果物: src/pages/disclosures/index.astro, src/pages/disclosures/[slug].astro
   - 完了条件: R-1.1〜R-1.3を満たす（新着順一覧表示、0件時の空メッセージ、タイトル押下で個別ページへ遷移）
   - _R-1.1, R-1.2, R-1.3_
