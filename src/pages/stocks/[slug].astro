@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("stocks");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout
+  title={`${entry.data.title} | KabuTrace`}
+  description={entry.data.summary ?? entry.data.title}
+>
+  <p class="meta">
+    {entry.data.date.toISOString().slice(0, 10)} ・ {entry.data.stockName}（{entry.data.stockCode}）
+  </p>
+  <h1>{entry.data.title}</h1>
+  <Content />
+</Layout>
+
+<style>
+  .meta {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+</style>
