@@ -54,6 +54,17 @@
  */
 
 /*
+ * box-sizingの既定値(content-box)だとpaddingがmax-width/widthの外側に
+ * 加算され、コンテンツ幅の頭打ち(N-1.2)が意図した値からずれるため、
+ * border-boxに統一する。
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
  * キーボード操作時のフォーカス可視性(N-4.3)。
  * リンクの装飾を個別コンポーネントで変更しているため、既定のoutlineに
  * 頼らず共通のフォーカススタイルを明示する。
