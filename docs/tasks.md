@@ -38,8 +38,8 @@
 
 ## フェーズ2: コンテンツ表示機能
 
-- [ ] 2.1 Content Collectionsスキーマ定義
-  - 成果物: src/content/config.ts
+- [x] 2.1 Content Collectionsスキーマ定義
+  - 成果物: src/content.config.ts （Astro 7ではsrc/content配下ではなくこのパスが正しい配置。実装時に判明）
   - 完了条件: disclosures / stocks / blog の3コレクションのスキーマが定義され、`npm run dev` でエラーなく認識される
   - _第6章R-1, 第5章, N-7.2_
 
