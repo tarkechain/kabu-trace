@@ -20,6 +20,11 @@ const stocks = defineCollection({
     stockCode: z.string(),
     stockName: z.string(),
     summary: z.string().optional(),
+    // 以下はデータシート用。値が確定していない場合は空欄のままでよい。
+    stockPrice: z.string().optional(),
+    marketCap: z.string().optional(),
+    per: z.string().optional(),
+    equityRatio: z.string().optional(),
   }),
 });
 
