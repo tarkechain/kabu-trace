@@ -21,7 +21,7 @@
   - 完了条件: `npm run dev` が起動し、CLAUDE.md記載のディレクトリ構成（src/pages, src/content, src/components, src/layouts）が存在する。astro.config.mjsのbaseが `/kabu-trace/` に設定されている
   - _第8章（デプロイ先の制約）_
 
-- [ ] 1.2 デザイントークンのCSS変数化
+- [x] 1.2 デザイントークンのCSS変数化
   - 成果物: src/styles/tokens.css
   - 完了条件: design-tokens.md記載の配色・タイポグラフィ・余白・ブレークポイントの全変数がCSSカスタムプロパティとして定義されている
   - _N-7.1, N-4.2_
