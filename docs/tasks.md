@@ -83,7 +83,7 @@
 
 ## フェーズ3: 非機能要件の実装
 
-- [ ] 3.1 SEO・OGPメタ情報実装
+- [x] 3.1 SEO・OGPメタ情報実装
   - 成果物: 各ページのフロントマター（title/description）、public/og-default.png
   - 完了条件: 各ページが固有のtitle/descriptionを持ち、全ページ共通のデフォルトOGP画像が設定されている
   - _N-5.1, N-5.2_
