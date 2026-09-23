@@ -113,7 +113,7 @@
 
 ## フェーズ5: ツール基盤
 
-- [ ] 5.1 Leaflet.js依存追加とグローバルナビ「ツール」リンク追加
+- [x] 5.1 Leaflet.js依存追加とグローバルナビ「ツール」リンク追加
   - 成果物: package.json, package-lock.json, src/components/Header.astro
   - 完了条件: `npm install leaflet` が成功する。全ページのグローバルナビに「開示まとめ・銘柄分析・blog」の末尾として「ツール」リンクが表示される
   - _T-1.3_
