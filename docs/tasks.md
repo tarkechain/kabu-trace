@@ -195,6 +195,15 @@
   - 地図の高さは現状維持（360px）。N-3.2は最大347.5KBで余裕152.5KBあり、さらなる削減は不要と判断。将来、対象会社の追加で余裕度が逼迫した場合にレスポンシブ化を検討する
   - _N-7.1（第10章には未掲載。継承要件としての参考チェック）_
 
+## フェーズ9: 公開（全スコープ共通）
+
+- [ ] 9.1 GitHub PagesへのCI/CDデプロイ設定
+  - 成果物: .github/workflows/deploy.yml
+  - 完了条件: mainへのpush時に自動でビルド・デプロイされ、https://tarkechain.github.io/kabu-trace/ で全ページが閲覧できる
+  - 実装: Astro公式の`withastro/action@v3`＋`actions/deploy-pages@v4`。package.jsonのenginesに合わせNode 22を明示
+  - 前提: リポジトリのPages設定でソースを「GitHub Actions」にする必要がある（ワークフローのマージ後に設定）
+  - _第8章（デプロイ先の制約）、完成条件（第1章）_
+
 ---
 
 ## 要件カバレッジ
