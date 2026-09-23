@@ -145,7 +145,7 @@
   - 完了条件: Leafletでのピン表示、Geolocation APIによる距離順並べ替え（拒否時は登録順にフォールバック）、業態フィルタ、ピン表示と一覧の連動、「© OpenStreetMap contributors」の帰属表示常時表示を実装する
   - _T-2.2〜T-2.7, T-3.2〜T-3.6_
 
-- [ ] 6.2 統合ページ実装 /tools/yutai-map/
+- [x] 6.2 統合ページ実装 /tools/yutai-map/
   - 成果物: src/pages/tools/yutai-map/index.astro
   - 完了条件: T-2.1を満たし（2社の店舗一覧表示）、6.1のコンポーネントを2社分のデータで使用する
   - _T-2.1_
