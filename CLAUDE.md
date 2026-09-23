@@ -7,8 +7,9 @@
 
 作業開始前に必ず以下を読むこと。
 
-- docs/requirements.md : 目的、スコープ、要件、受け入れ基準
-- docs/design-tokens.md : 視覚仕様の数値
+- docs/requirements.md : 目的、スコープ、要件、受け入れ基準（3本柱: 適時開示まとめ・銘柄分析・blog）
+- docs/requirements-tools.md : ツールページ群（/tools/）の要件、受け入れ基準（新規スコープ、既存スコープとは独立）
+- docs/design-tokens.md : 視覚仕様の数値（全スコープ共通）
 - docs/tasks.md : 実装タスクの台帳（存在する場合）
 - docs/decisions.md : 過去の決定と理由（判断に迷ったときのみ参照）
 
