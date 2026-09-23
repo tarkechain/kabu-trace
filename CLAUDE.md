@@ -25,6 +25,7 @@
 - スタイル手法: 素のCSS + カスタムプロパティ（design-tokens.md の値をCSS変数として展開する）
 - パッケージマネージャ: npm
 - ホスティング: GitHub Pages（既存パターンを踏襲）
+- /tools/配下（ツールページ群）のみ、同一オリジンの自作JavaScript・Leaflet.jsを使用する（詳細はdocs/requirements-tools.md参照）。それ以外のページは素のCSSのみで実装する方針を維持する。
 
 ## よく使うコマンド
 

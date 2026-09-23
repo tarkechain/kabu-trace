@@ -120,7 +120,7 @@
 
 ### 7.6 セキュリティ
 - N-6.1 THE SYSTEM SHALL 秘密情報をクライアント側のコードに含めない
-- N-6.2 THE SYSTEM SHALL 外部スクリプトを使用しない
+- N-6.2 THE SYSTEM SHALL 外部スクリプトを使用しない（同一オリジンから配信する自作スクリプトは対象外。解釈の詳細はdocs/requirements-tools.md第7章、docs/decisions.md [tools]D-1参照）
 
 ### 7.7 保守性
 - N-7.1 THE SYSTEM SHALL 色・余白・フォントの値を design-tokens.md に定義された変数経由でのみ参照する
