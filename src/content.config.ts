@@ -37,4 +37,39 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { disclosures, stocks, blog };
+// 株主優待マップ用。1ファイル=1会社。対象会社が今後増える前提の汎用スキーマ
+// (docs/requirements-tools.md 第5章)。rate_labelは表示用文字列として必須、
+// %として扱える場合のみrate_percentを追加で持たせる。会社固有フィールドは
+// オプショナルとして吸収する。
+const yutaiStoreSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  address: z.string(),
+  lat: z.number(),
+  lng: z.number(),
+  checked: z.coerce.date(),
+  rateLabel: z.string(),
+  ratePercent: z.number().optional(),
+  brand: z.string().optional(),
+  ward: z.string().optional(),
+  company: z.string().optional(),
+  tel: z.string().optional(),
+  placeId: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+const yutaiCompanies = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/yutai-companies" }),
+  schema: z.object({
+    slug: z.string(),
+    name: z.string(),
+    ticker: z.string().optional(),
+    scope: z.string(),
+    rateSource: z.string(),
+    generatedAt: z.coerce.date(),
+    notes: z.array(z.string()).optional(),
+    stores: z.array(yutaiStoreSchema),
+  }),
+});
+
+export const collections = { disclosures, stocks, blog, yutaiCompanies };

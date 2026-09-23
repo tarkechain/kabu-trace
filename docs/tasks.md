@@ -123,7 +123,7 @@
   - 完了条件: T-1.1・T-1.2を満たす（カード追加順表示、押下で対応ページへ遷移）
   - _T-1.1, T-1.2_
 
-- [ ] 5.3 株主優待マップの汎用データスキーマ・Content Collections定義
+- [x] 5.3 株主優待マップの汎用データスキーマ・Content Collections定義
   - 成果物: src/content.config.ts（追記）
   - 完了条件: 会社単位（slug等）・店舗単位（rate_label必須／rate_percentオプショナル等）の汎用スキーマが定義され、`npm run dev` でエラーなく認識される
   - _第5章（データスキーマ）_
