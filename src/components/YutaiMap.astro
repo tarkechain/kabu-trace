@@ -69,32 +69,57 @@ const brands = [...new Set(stores.map((s) => s.brand).filter(Boolean))].sort() a
     const filterEl = root.querySelector<HTMLSelectElement>(".brand-filter")!;
     const statusEl = root.querySelector<HTMLElement>(".geo-status")!;
 
-    const map = L.map(mapEl).setView(
-      [stores[0]?.lat ?? 35.681236, stores[0]?.lng ?? 139.767125],
-      stores.length > 0 ? 11 : 5
-    );
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-
-    const markersLayer = L.layerGroup().addTo(map);
+    let map: any = null;
+    let markersLayer: any = null;
     let currentOrder = stores; // 登録順(距離取得失敗/拒否時のフォールバック)
     let currentBrand = "";
 
-    function render() {
-      const filtered = currentOrder.filter((s: any) => !currentBrand || s.brand === currentBrand);
+    function visibleStores() {
+      return currentOrder.filter((s: any) => !currentBrand || s.brand === currentBrand);
+    }
 
+    // 地図が画面内に入るまで初期化しない。タイル取得を遅らせ、
+    // 地図まで到達しない利用者には転送量を発生させないため(N-3.2)
+    function initMap() {
+      if (map) return;
+      map = L.map(mapEl);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      markersLayer = L.layerGroup().addTo(map);
+      fitToStores();
+      renderMarkers();
+    }
+
+    // 全店舗が収まる範囲に合わせる。広域の会社ほどズームが下がり、
+    // 取得するタイルが軽くなる(N-3.2)
+    function fitToStores() {
+      const pts = visibleStores().map((s: any) => [s.lat, s.lng]);
+      if (pts.length > 0) {
+        map.fitBounds(pts, { padding: [16, 16] });
+      } else {
+        map.setView([35.681236, 139.767125], 5);
+      }
+    }
+
+    function renderMarkers() {
+      if (!map) return;
       markersLayer.clearLayers();
-      listEl.innerHTML = "";
-
-      filtered.forEach((s: any) => {
-        const marker = L.marker([s.lat, s.lng]).bindPopup(
-          `<strong>${s.name}</strong><br>${s.rateLabel}<br>${s.address}`
+      visibleStores().forEach((s: any) => {
+        markersLayer.addLayer(
+          L.marker([s.lat, s.lng]).bindPopup(
+            `<strong>${s.name}</strong><br>${s.rateLabel}<br>${s.address}`
+          )
         );
-        markersLayer.addLayer(marker);
+      });
+    }
 
+    function renderList() {
+      listEl.innerHTML = "";
+      visibleStores().forEach((s: any) => {
         const li = document.createElement("li");
         const distText =
           typeof s._distanceKm === "number" ? `（約${s._distanceKm.toFixed(1)}km）` : "";
@@ -103,12 +128,32 @@ const brands = [...new Set(stores.map((s) => s.brand).filter(Boolean))].sort() a
       });
     }
 
+    function render() {
+      renderList();
+      renderMarkers();
+    }
+
     filterEl.addEventListener("change", () => {
       currentBrand = filterEl.value;
       render();
     });
 
-    render();
+    renderList();
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            observer.disconnect();
+            initMap();
+          }
+        },
+        { rootMargin: "100px" }
+      );
+      observer.observe(mapEl);
+    } else {
+      initMap();
+    }
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
