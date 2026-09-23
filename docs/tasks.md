@@ -133,7 +133,7 @@
   - 完了条件: `~/Downloads/Saintmarc_yutai_artifacts/saintmarc_yutai_stores.json` の68店舗が汎用スキーマへ移行され、出典（rate_source）・notesを保持している
   - _第5章_
 
-- [ ] 5.5 (P) 株主優待マップデータ移行: ヴィア・ホールディングス
+- [x] 5.5 (P) 株主優待マップデータ移行: ヴィア・ホールディングス
   - 成果物: 移行済みデータファイル1件（ヴィア259店舗分）
   - 完了条件: `~/Downloads/Via_holdings_yutai_artifacts/via_holdings_yutai_ledger.json` の259店舗が汎用スキーマへ移行され、出典・notesを保持している
   - _第5章_
