@@ -1,0 +1,223 @@
+---
+import "leaflet/dist/leaflet.css";
+
+interface Store {
+  id: number;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  rateLabel: string;
+  brand?: string;
+  companyName?: string;
+}
+
+interface Props {
+  stores: Store[];
+}
+
+const { stores } = Astro.props;
+const brands = [...new Set(stores.map((s) => s.brand).filter(Boolean))].sort() as string[];
+---
+
+<div class="yutai-map" data-stores={JSON.stringify(stores)}>
+  <div class="controls">
+    <label>
+      業態で絞り込み:
+      <select class="brand-filter">
+        <option value="">すべて（{stores.length}件）</option>
+        {brands.map((b) => (
+          <option value={b}>{b}</option>
+        ))}
+      </select>
+    </label>
+    <p class="geo-status"></p>
+  </div>
+  <div class="map"></div>
+  <ul class="store-list"></ul>
+</div>
+
+<script>
+  import L from "leaflet";
+  import markerIcon from "leaflet/dist/images/marker-icon.png?url";
+  import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png?url";
+  import markerShadow from "leaflet/dist/images/marker-shadow.png?url";
+
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+  });
+
+  // Haversine距離(km)
+  function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const toRad = (d: number) => (d * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  document.querySelectorAll<HTMLElement>(".yutai-map").forEach((root) => {
+    const stores = JSON.parse(root.dataset.stores ?? "[]");
+    const mapEl = root.querySelector<HTMLElement>(".map")!;
+    const listEl = root.querySelector<HTMLElement>(".store-list")!;
+    const filterEl = root.querySelector<HTMLSelectElement>(".brand-filter")!;
+    const statusEl = root.querySelector<HTMLElement>(".geo-status")!;
+
+    let map: any = null;
+    let markersLayer: any = null;
+    let currentOrder = stores; // 登録順(距離取得失敗/拒否時のフォールバック)
+    let currentBrand = "";
+
+    function visibleStores() {
+      return currentOrder.filter((s: any) => !currentBrand || s.brand === currentBrand);
+    }
+
+    // 地図が画面内に入るまで初期化しない。タイル取得を遅らせ、
+    // 地図まで到達しない利用者には転送量を発生させないため(N-3.2)
+    function initMap() {
+      if (map) return;
+      map = L.map(mapEl);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      markersLayer = L.layerGroup().addTo(map);
+      fitToStores();
+      renderMarkers();
+    }
+
+    // 全店舗が収まる範囲に合わせる。広域の会社ほどズームが下がり、
+    // 取得するタイルが軽くなる(N-3.2)
+    function fitToStores() {
+      const pts = visibleStores().map((s: any) => [s.lat, s.lng]);
+      if (pts.length > 0) {
+        map.fitBounds(pts, { padding: [16, 16] });
+      } else {
+        map.setView([35.681236, 139.767125], 5);
+      }
+    }
+
+    function renderMarkers() {
+      if (!map) return;
+      markersLayer.clearLayers();
+      visibleStores().forEach((s: any) => {
+        markersLayer.addLayer(
+          L.marker([s.lat, s.lng]).bindPopup(
+            `<strong>${s.name}</strong><br>${s.rateLabel}<br>${s.address}`
+          )
+        );
+      });
+    }
+
+    function renderList() {
+      listEl.innerHTML = "";
+      visibleStores().forEach((s: any) => {
+        const li = document.createElement("li");
+        const distText =
+          typeof s._distanceKm === "number" ? `（約${s._distanceKm.toFixed(1)}km）` : "";
+        li.innerHTML = `<strong>${s.name}</strong>${distText}<br><span class="meta">${s.rateLabel} ・ ${s.address}</span>`;
+        listEl.appendChild(li);
+      });
+    }
+
+    function render() {
+      renderList();
+      renderMarkers();
+    }
+
+    filterEl.addEventListener("change", () => {
+      currentBrand = filterEl.value;
+      render();
+    });
+
+    renderList();
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            observer.disconnect();
+            initMap();
+          }
+        },
+        { rootMargin: "100px" }
+      );
+      observer.observe(mapEl);
+    } else {
+      initMap();
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          currentOrder = [...stores]
+            .map((s: any) => ({ ...s, _distanceKm: distanceKm(latitude, longitude, s.lat, s.lng) }))
+            .sort((a: any, b: any) => a._distanceKm - b._distanceKm);
+          statusEl.textContent = "現在地からの距離順に表示しています。";
+          render();
+        },
+        () => {
+          statusEl.textContent = "位置情報が取得できないため、登録順に表示しています。";
+        },
+        { timeout: 8000 }
+      );
+    } else {
+      statusEl.textContent = "この端末では位置情報が利用できないため、登録順に表示しています。";
+    }
+  });
+</script>
+
+<style>
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .geo-status {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .map {
+    width: 100%;
+    height: var(--map-height);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-md);
+  }
+
+  .store-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .store-list li {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .store-list .meta {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+</style>

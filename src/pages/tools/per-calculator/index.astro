@@ -1,0 +1,168 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+
+const fields = [
+  { name: "currentAssets", label: "流動資産" },
+  { name: "inventory", label: "棚卸資産" },
+  { name: "investments", label: "投資有価証券" },
+  { name: "liabilities", label: "負債合計" },
+  { name: "marketCap", label: "時価総額" },
+  { name: "netIncome", label: "当期純利益" },
+];
+---
+
+<Layout
+  title="キャッシュニュートラルPER計算ツール | KabuTrace"
+  description="財務数値を入力すると、キャッシュニュートラルPERを即時に算出します。"
+>
+  <h1>キャッシュニュートラルPER計算ツール</h1>
+  <p class="intro">
+    6項目を入力すると、ネットキャッシュ・ネットキャッシュ比率・キャッシュニュートラルPERを即時に算出します。
+  </p>
+
+  <form class="per-form">
+    {fields.map((f) => (
+      <label>
+        {f.label}（円）
+        <input type="number" name={f.name} inputmode="decimal" />
+      </label>
+    ))}
+  </form>
+
+  <div class="results">
+    <div class="result-card">
+      <h2>ネットキャッシュ</h2>
+      <p class="value" data-result="netCash">-</p>
+    </div>
+    <div class="result-card">
+      <h2>ネットキャッシュ比率</h2>
+      <p class="value" data-result="netCashRatio">-</p>
+    </div>
+    <div class="result-card">
+      <h2>キャッシュニュートラルPER</h2>
+      <p class="value" data-result="per">-</p>
+    </div>
+  </div>
+
+  <p class="formula-note">
+    計算式: ネットキャッシュ ＝ 流動資産－棚卸資産＋投資有価証券×0.7－負債合計 ／
+    ネットキャッシュ比率 ＝ ネットキャッシュ÷時価総額 ／
+    キャッシュニュートラルPER ＝ (時価総額－ネットキャッシュ)÷当期純利益
+  </p>
+</Layout>
+
+<script>
+  const form = document.querySelector(".per-form");
+  const inputs = form.querySelectorAll("input");
+  const netCashEl = document.querySelector('[data-result="netCash"]');
+  const netCashRatioEl = document.querySelector('[data-result="netCashRatio"]');
+  const perEl = document.querySelector('[data-result="per"]');
+
+  function parseNum(v) {
+    if (v === "" || v === null) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function fmt(n) {
+    return n.toLocaleString("ja-JP", { maximumFractionDigits: 2 });
+  }
+
+  function calc() {
+    const values = {};
+    let hasEmpty = false;
+
+    inputs.forEach((input) => {
+      const n = parseNum(input.value);
+      values[input.name] = n;
+      if (n === null) hasEmpty = true;
+    });
+
+    if (hasEmpty) {
+      netCashEl.textContent = "未入力";
+      netCashRatioEl.textContent = "未入力";
+      perEl.textContent = "未入力";
+      return;
+    }
+
+    const netCash =
+      values.currentAssets - values.inventory + values.investments * 0.7 - values.liabilities;
+    netCashEl.textContent = `${fmt(netCash)}円`;
+
+    netCashRatioEl.textContent =
+      values.marketCap === 0
+        ? "算出不可（時価総額が0）"
+        : `${((netCash / values.marketCap) * 100).toFixed(1)}%`;
+
+    perEl.textContent =
+      values.netIncome === 0
+        ? "算出不可（当期純利益が0）"
+        : `${((values.marketCap - netCash) / values.netIncome).toFixed(2)}倍`;
+  }
+
+  inputs.forEach((input) => input.addEventListener("input", calc));
+  calc();
+</script>
+
+<style>
+  .intro {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .per-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin: var(--space-md) 0 var(--space-lg) 0;
+  }
+
+  .per-form label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    font-size: var(--font-size-note);
+    color: var(--color-text-muted);
+  }
+
+  .per-form input {
+    padding: var(--space-sm);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: var(--font-size-body);
+    font-family: inherit;
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .result-card {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .result-card h2 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-size-h3);
+  }
+
+  .result-card .value {
+    margin: 0;
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
+    color: var(--color-accent);
+  }
+
+  .formula-note {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+</style>

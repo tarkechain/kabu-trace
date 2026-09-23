@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import YutaiMap from "../../../components/YutaiMap.astro";
+
+export async function getStaticPaths() {
+  const companies = await getCollection("yutaiCompanies");
+  return companies.map((company) => ({
+    params: { slug: company.data.slug },
+    props: { company },
+  }));
+}
+
+const { company } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const c = company.data;
+---
+
+<Layout
+  title={`${c.name}の株主優待マップ | KabuTrace`}
+  description={`${c.name}の株主優待対象店舗を地図・距離順・業態フィルタで確認できます。`}
+>
+  <p class="back">
+    <a href={`${base}tools/yutai-map/`}>株主優待マップ一覧へ戻る</a>
+  </p>
+
+  <h1>{c.name}{c.ticker && `（${c.ticker}）`}</h1>
+
+  <YutaiMap stores={c.stores} />
+
+  <section class="source">
+    <h2>出典</h2>
+    <p>{c.rateSource}</p>
+    <p>対象範囲: {c.scope}</p>
+    <p>基準日: {c.generatedAt.toISOString().slice(0, 10)}</p>
+    {c.notes && c.notes.length > 0 && (
+      <ul>
+        {c.notes.map((n: string) => (
+          <li>{n}</li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Layout>
+
+<style>
+  .back {
+    margin: 0 0 var(--space-md) 0;
+    font-size: var(--font-size-note);
+  }
+
+  .back a {
+    color: var(--color-accent);
+  }
+
+  .source {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-md);
+    border-top: var(--border-width) solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .source ul {
+    margin: var(--space-sm) 0 0 0;
+    padding-left: var(--space-md);
+  }
+</style>

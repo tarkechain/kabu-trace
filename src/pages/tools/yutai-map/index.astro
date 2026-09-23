@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import YutaiMap from "../../../components/YutaiMap.astro";
+
+const base = import.meta.env.BASE_URL;
+const companies = await getCollection("yutaiCompanies");
+
+const stores = companies.flatMap((c) =>
+  c.data.stores.map((s) => ({ ...s, companyName: c.data.name }))
+);
+---
+
+<Layout
+  title="株主優待マップ | KabuTrace"
+  description="サンマルクホールディングス・ヴィア・ホールディングスの株主優待対象店舗を地図・距離順・業態フィルタで探せます。"
+>
+  <h1>株主優待マップ</h1>
+  <p class="companies">
+    対象会社:
+    {companies.map((c, i) => (
+      <>
+        {i > 0 && "、"}
+        <a href={`${base}tools/yutai-map/${c.data.slug}/`}>{c.data.name}</a>
+      </>
+    ))}
+  </p>
+
+  <YutaiMap stores={stores} />
+</Layout>
+
+<style>
+  .companies {
+    margin: 0 0 var(--space-md) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .companies a {
+    color: var(--color-accent);
+  }
+</style>
