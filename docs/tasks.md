@@ -128,7 +128,7 @@
   - 完了条件: 会社単位（slug等）・店舗単位（rate_label必須／rate_percentオプショナル等）の汎用スキーマが定義され、`npm run dev` でエラーなく認識される
   - _第5章（データスキーマ）_
 
-- [ ] 5.4 (P) 株主優待マップデータ移行: サンマルクホールディングス
+- [x] 5.4 (P) 株主優待マップデータ移行: サンマルクホールディングス
   - 成果物: 移行済みデータファイル1件（サンマルク68店舗分）
   - 完了条件: `~/Downloads/Saintmarc_yutai_artifacts/saintmarc_yutai_stores.json` の68店舗が汎用スキーマへ移行され、出典（rate_source）・notesを保持している
   - _第5章_
