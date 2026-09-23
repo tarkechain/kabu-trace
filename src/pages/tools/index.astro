@@ -1,0 +1,74 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const base = import.meta.env.BASE_URL;
+
+const tools = [
+  {
+    href: `${base}tools/yutai-map/`,
+    label: "株主優待マップ",
+    description: "株主優待の対象店舗を地図・距離順・業態フィルタで探せます。",
+  },
+  {
+    href: `${base}tools/per-calculator/`,
+    label: "キャッシュニュートラルPER計算ツール",
+    description: "財務数値を入力すると、キャッシュニュートラルPERを即時に算出します。",
+  },
+];
+---
+
+<Layout
+  title="ツール | KabuTrace"
+  description="株主優待マップ・キャッシュニュートラルPER計算ツールなど、投資に役立つツール一覧です。"
+>
+  <h1>ツール</h1>
+
+  <ul class="card-list">
+    {tools.map((tool) => (
+      <li class="card">
+        <h2>{tool.label}</h2>
+        <p>{tool.description}</p>
+        <a href={tool.href}>使ってみる</a>
+      </li>
+    ))}
+  </ul>
+</Layout>
+
+<style>
+  .card-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .card {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .card h2 {
+    margin: 0 0 var(--space-xs) 0;
+  }
+
+  .card p {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-note);
+  }
+
+  .card a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: var(--font-weight-h3);
+  }
+
+  .card a:hover,
+  .card a:focus-visible {
+    text-decoration: underline;
+  }
+</style>
